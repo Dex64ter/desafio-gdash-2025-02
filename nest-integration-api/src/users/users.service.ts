@@ -12,15 +12,9 @@ export class UsersService {
   private readonly users: User[] = [
     {
       id: '1',
-      email: process.env.DEFAULT_ADMIN_EMAIL || 'admin@example.com',
-      userName: 'email',
-      password: process.env.DEFAULT_ADMIN_PASSWORD || '123456',
-    },
-    {
-      id: '2',
-      email: 'john_doe@example.com',
-      userName: 'john_doe',
-      password: 'password123',
+      email: process.env.DEFAULT_ADMIN_EMAIL || '',
+      userName: 'admin',
+      password: process.env.DEFAULT_ADMIN_PASSWORD || 'adminpass',
     },
   ];
 
