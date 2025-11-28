@@ -12,9 +12,9 @@ export class UsersService {
   private readonly users: User[] = [
     {
       id: '1',
-      email: process.env.DEFAULT_ADMIN_EMAIL || '',
+      email: 'admin@example.com',
       userName: 'admin',
-      password: process.env.DEFAULT_ADMIN_PASSWORD || 'adminpass',
+      password: '123456',
     },
   ];
 
@@ -22,8 +22,11 @@ export class UsersService {
     return this.users;
   }
 
-  findOne(id: string): User | undefined {
-    return this.users.find((user) => user.id === id);
+  findOne(email: string): User | undefined {
+    const usuarioValidate: User | undefined = this.users.find(
+      (user) => user.email === email,
+    );
+    return usuarioValidate;
   }
 
   create(userName: string, password: string): User {
@@ -34,5 +37,15 @@ export class UsersService {
     };
     this.users.push(newUser);
     return newUser;
+  }
+
+  editUser(id: string, updateData: Partial<User>): User | undefined {
+    const userIndex = this.users.findIndex((user) => user.id === id);
+    if (userIndex === -1) {
+      return undefined;
+    }
+    const updatedUser = { ...this.users[userIndex], ...updateData };
+    this.users[userIndex] = updatedUser;
+    return updatedUser;
   }
 }

@@ -15,7 +15,6 @@ export class AuthController {
   @Post('login')
   signIn(@Body() signInDto: SignInDto) {
     return {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       access_token: this.authService.signIn(
         signInDto.email,
         signInDto.password,

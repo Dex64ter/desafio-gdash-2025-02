@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -12,11 +20,34 @@ export class UsersController {
 
   @Get(':id') // /users/:id
   findOne(@Param('id') id: string) {
-    return { message: `This action returns a user by id: ${id}` };
+    return this.usersService.findOne(id);
   }
 
   @Post() // /users
-  createUser(@Body() createUserDTO: { userName: string; password: string }) {
+  createUser(
+    @Body()
+    createUserDTO: {
+      email: string;
+      userName: string;
+      password: string;
+    },
+  ) {
     return { message: `User ${createUserDTO.userName} created successfully` };
+  }
+
+  @Put(':id') // /users/:id
+  updateUser(
+    @Param('id') id: string,
+    @Body()
+    updateUserDTO: { email?: string; userName?: string; password?: string },
+  ) {
+    return {
+      message: `User with id ${id} updated successfully, new data: ${JSON.stringify(updateUserDTO)}`,
+    };
+  }
+
+  @Delete(':id') // /users/:id
+  deleteUser(@Param('id') id: string) {
+    return { message: `User with id ${id} deleted successfully` };
   }
 }
