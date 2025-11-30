@@ -1,11 +1,16 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-// import { AuthGuard } from '@nestjs/passport';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+  Get,
+  Request,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-
-type SignInDto = {
-  email: string;
-  password: string;
-};
+import { SignInDto } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,18 +18,20 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: SignInDto) {
+  async signIn(@Body() signInDto: SignInDto) {
     return {
-      access_token: this.authService.signIn(
+      access_token: await this.authService.signIn(
         signInDto.email,
         signInDto.password,
       ),
     };
   }
 
-  // @UseGuards(AuthGuard('jwt')) // para proteger uma rota caso não tenha um token válido
-  // @Get('profile')
-  // getProfile(@Request() req: any) {
-  //   return req.user;
-  // }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call
+  @UseGuards(AuthGuard('jwt'))
+  @Get('profile')
+  getProfile(@Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+    return req.user;
+  }
 }

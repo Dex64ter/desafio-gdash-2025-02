@@ -9,6 +9,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: djsdev
+      MONGO_INITDB_DATABASE: GDASH
     ports:
       - "27015:27017"
     volumes:
