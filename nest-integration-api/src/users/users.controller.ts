@@ -9,8 +9,9 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiOkResponse, ApiOAuth2 } from '@nestjs/swagger';
 
+@ApiOAuth2(['read', 'write'])
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

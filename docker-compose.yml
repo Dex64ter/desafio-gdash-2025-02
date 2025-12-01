@@ -14,3 +14,42 @@ services:
       - "27015:27017"
     volumes:
       - /data/db
+  # ----------------------------
+  # Queue Service
+  # ----------------------------
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"      # Conexão de aplicações
+      - "15672:15672"    # Dashboard web
+  # ----------------------------
+  # Collector Service
+  # ----------------------------
+  collector:
+    build: ./collector
+    container_name: collector-python
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_URL: "amqp://rabbitmq:5672"
+      LATITUDE: "-5.55"
+      LONGITUDE: "-42.63"
+      INTERVAL: "300"
+
+  # ----------------------------
+  # Api Service
+  # ----------------------------
+  api:
+    build:
+      context: ./nest-integration-api
+      dockerfile: Dockerfile
+      container_name: api-dev
+      ports:
+        - "3000:3000"
+      volumes:
+        - ./nest-integration-api:/app
+        - /app/node_modules
+      command: npm run start:dev
