@@ -1,5 +1,28 @@
 services:
   # ----------------------------
+  # Queue Service
+  # ----------------------------
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"      # Conexão de aplicações
+      - "15672:15672"    # Dashboard web
+
+  # ----------------------------
+  # Collector Service
+  # ----------------------------
+  collector:
+    build: ./collector
+    container_name: collector-python
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+  
+  # ----------------------------
   # MongoDB Service
   # ----------------------------
   mongodb:
@@ -11,45 +34,27 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: djsdev
       MONGO_INITDB_DATABASE: GDASH
     ports:
-      - "27015:27017"
+      - "27017:27017"
     volumes:
-      - /data/db
-  # ----------------------------
-  # Queue Service
-  # ----------------------------
-  rabbitmq:
-    image: rabbitmq:4-management
-    container_name: rabbitmq
-    restart: always
-    ports:
-      - "5672:5672"      # Conexão de aplicações
-      - "15672:15672"    # Dashboard web
-  # ----------------------------
-  # Collector Service
-  # ----------------------------
-  collector:
-    build: ./collector
-    container_name: collector-python
-    restart: always
-    depends_on:
-      - rabbitmq
-    environment:
-      RABBITMQ_URL: "amqp://rabbitmq:5672"
-      LATITUDE: "-5.55"
-      LONGITUDE: "-42.63"
-      INTERVAL: "300"
-
-  # ----------------------------
-  # Api Service
-  # ----------------------------
+      - mongo_data:/data/db
+  
   api:
-    build:
+    build: 
       context: ./nest-integration-api
       dockerfile: Dockerfile
-      container_name: api-dev
-      ports:
-        - "3000:3000"
-      volumes:
-        - ./nest-integration-api:/app
-        - /app/node_modules
-      command: npm run start:dev
+    container_name: api-nestjs
+    restart: always
+    depends_on:
+      - mongodb
+      - rabbitmq
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./nest-integration-api:/app
+      - /app/node_modules
+    environment:
+      - MONGO_URL=mongodb://root:djsdev@mongodb:27017/GDASH?authSource=admin
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      
+volumes:
+  mongo_data:
