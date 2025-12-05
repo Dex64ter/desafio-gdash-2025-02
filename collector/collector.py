@@ -54,7 +54,7 @@ def main():
 
             print("✔ Mensagem enviada:", weather)
 
-            time.sleep(10)
+            time.sleep(120)
 
         except (pika.exceptions.AMQPConnectionError, pika.exceptions.StreamLostError):
             print("⚠ Conexão perdida! Tentando reconectar...")

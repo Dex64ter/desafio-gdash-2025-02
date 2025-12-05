@@ -53,8 +53,21 @@ services:
       - ./nest-integration-api:/app
       - /app/node_modules
     environment:
-      - MONGO_URL=mongodb://root:djsdev@mongodb:27017/GDASH?authSource=admin
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
-      
+      MONGO_DB_URI: mongodb://root:djsdev@mongodb:27017/GDASH?authSource=admin
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+  
+  worker-go:
+    build:
+      context: ./worker-go
+      dockerfile: Dockerfile
+    container_name: worker-go
+    restart: always
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./worker-go:/app
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+
 volumes:
   mongo_data:
